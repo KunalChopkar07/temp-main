@@ -88,6 +88,41 @@ from indicators.historical_volatility import calculate_historical_volatility
 from indicators.gaps import calculate_gaps
 from indicators.fisher_transform import calculate_fisher_transform
 from indicators.elder_force_index import calculate_elder_force_index
+from indicators.fisher import calculate_fisher
+from indicators.cc import cc
+from indicators.dema import calculate_dema
+from indicators.di import calculate_di
+from indicators.dm import calculate_dm
+from indicators.dpo import calculate_dpo
+from indicators.dx import calculate_dx
+from indicators.emv import calculate_emv
+from indicators.ichimoku_cloud import calculate_ichimoku_cloud
+from indicators.keltner import calculate_keltner
+from indicators.kst import calculate_kst
+from indicators.ma import calculate_ma
+from indicators.mass import calculate_mass
+from indicators.mean_ad import calculate_mean_ad
+from indicators.median_ad import calculate_median_ad
+from indicators.medprice import calculate_medprice
+from indicators.mom import calculate_momentum
+from indicators.pivot import calculate_pivot
+from indicators.rocp import calculate_rocp
+from indicators.rocr import calculate_rocr
+from indicators.rocr100 import calculate_rocr100
+from indicators.rvi import calculate_rvi
+from indicators.sar import calculate_parabolic_sar
+from indicators.smma import calculate_smma
+from indicators.stoch import calculate_stochastic
+from indicators.tema import calculate_tema
+from indicators.ttm_trend import calculate_ttm_trend
+from indicators.ultosc import calculate_ultosc
+from indicators.volume import calculate_volume
+from indicators.vpt import calculate_vpt
+from indicators.vpwma import calculate_vpwma
+from indicators.wma import calculate_wma
+
+
+
 
 
 
@@ -106,7 +141,7 @@ from models.indicator_request import VolatilityStopRequest
 from models.indicator_request import NoPeriodIndicatorRequest
 from models.indicator_request import MACrossRequest
 from models.indicator_request import MultiTimeframeRequest
-
+from models.indicator_request import MARequest
 
 
 import numpy as np
@@ -1455,3 +1490,511 @@ async def get_elder_force_index(data: IndicatorRequest):
 
 
 
+@app.post("/fisher")
+async def get_fisher(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_fisher(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+            "period": data.period
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+
+@app.post("/cc")
+async def get_cc(data: IndicatorRequest):
+    candles = await fetch_candles(data.symbol, data.interval, data.limit)
+    result = cc(candles, period=data.period, sequential=True)
+
+    result_clean = result[~np.isnan(result)]
+    return {
+        "indicator": "cc",
+        "symbol": data.symbol.upper(),
+        "interval": data.interval,
+        "period": data.period,
+        "values": result_clean.tolist()
+    }
+
+
+
+
+
+
+@app.post("/dema")
+async def get_dema(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_dema(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+            "period": data.period
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+
+@app.post("/di")
+async def get_di(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_di(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+            "period": data.period
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/dm")
+async def get_dm(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_dm(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+            "period": data.period
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+
+@app.post("/dpo")
+async def get_dpo(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_dpo(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+            "period": data.period
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/dx")
+async def get_dx(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_dx(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+            "period": data.period
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    
+    
+@app.post("/emv")
+async def get_emv(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_emv(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+            "period": data.period
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/ichimoku_cloud")
+async def get_ichimoku_cloud(data: NoPeriodIndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_ichimoku_cloud(candles)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/keltner")
+async def get_keltner(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_keltner(candles, period=data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@app.post("/kst")
+async def get_kst(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_kst(candles)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@app.post("/ma")
+async def get_ma(data: MARequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_ma(candles, data.period, data.ma_type)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/mass_index")
+async def get_mass_index(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_mass(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@app.post("/mean_ad")
+async def get_mean_ad(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_mean_ad(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@app.post("/median_ad")
+async def get_median_ad(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_median_ad(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@app.post("/medprice")
+async def get_medprice(data: NoPeriodIndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_medprice(candles)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/momentum")
+async def get_momentum(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_momentum(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/pivot_points")
+async def get_pivot_points(data: NoPeriodIndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_pivot(candles)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@app.post("/rocp")
+async def get_rocp(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_rocp(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/rocr")
+async def get_rocr(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_rocr(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@app.post("/rocr100")
+async def get_rocr100(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_rocr100(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@app.post("/rvi")
+async def get_rvi(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_rvi(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@app.post("/sar")
+async def get_sar(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_parabolic_sar(candles)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@app.post("/smma")
+async def get_smma(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_smma(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+            "period": data.period
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/stochastic")
+async def get_stochastic(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_stochastic(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+            "period": data.period
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@app.post("/tema")
+async def get_tema(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_tema(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/ttm_trend")
+async def get_ttm_trend(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_ttm_trend(candles, period=data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/ultosc")
+async def get_ultosc(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_ultosc(candles)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/volume")
+async def get_volume(data: NoPeriodIndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_volume(candles)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/vpt")
+async def get_vpt(data: NoPeriodIndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_vpt(candles)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@app.post("/vpwma")
+async def get_vpwma(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_vpwma(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+            "period": data.period
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/wma")
+async def get_wma(data: IndicatorRequest):
+    try:
+        candles = await fetch_candles(data.symbol, data.interval, data.limit)
+        result = calculate_wma(candles, data.period)
+        result.update({
+            "symbol": data.symbol.upper(),
+            "interval": data.interval,
+            "period": data.period
+        })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

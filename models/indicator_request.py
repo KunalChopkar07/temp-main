@@ -91,7 +91,12 @@ class MultiTimeframeRequest(BaseModel):
     higher_interval: str
     period: int
     
-    
+class MARequest(BaseModel):
+    symbol: str
+    interval: str
+    limit: int
+    period: int
+    ma_type: str
     
     
 class DPORequest(BaseModel):
